@@ -82,11 +82,17 @@ function Coin() {
     ["info", coinId],
     () => fetchCoinInfo(coinId || "")
   );
+
   const { isLoading: tickersLoading, data: tickersData } = useQuery<PriceData>(
     ["tickers", coinId],
-    () => fetchCoinTickers(coinId || "")
+    () => fetchCoinTickers(coinId || ""),
+    {
+      refetchInterval: 5000,
+    }
   );
+
   const loading = infoLoading || tickersLoading;
+
   // const [loading, setLoading] = useState(true);
   // const [info, setInfo] = useState<InfoData>();
   // const [priceInfo, setPriceInfo] = useState<PriceData>();
@@ -126,8 +132,8 @@ function Coin() {
               <span>${infoData?.symbol}</span>
             </OverviewItem>
             <OverviewItem>
-              <span>Open Source:</span>
-              <span>{infoData?.open_source ? "Yes" : "No"}</span>
+              <span>Price:</span>
+              <span>${tickersData?.quotes.USD.price.toFixed(3)}</span>
             </OverviewItem>
           </Overview>
           <Description>{infoData?.description}</Description>

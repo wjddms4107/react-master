@@ -21,3 +21,10 @@ export async function fetchCoinTickers(coinId: string) {
     response.json()
   );
 }
+
+export async function fetchCoinHistory(coinId: string) {
+  const respons = await fetch(
+    `https://ohlcv-api.nomadcoders.workers.dev/?coinId=${coinId}`
+  );
+  return respons.json();
+}
