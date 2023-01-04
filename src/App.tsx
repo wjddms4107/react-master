@@ -63,6 +63,7 @@ a {
   text-decoration:none;
   color: inherit; //부모에게서 부터 색깔 가져와라.
 }
+
 `;
 
 function App() {
