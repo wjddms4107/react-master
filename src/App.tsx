@@ -1,42 +1,58 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from "react";
 import styled from "styled-components";
-import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { useRecoilState } from "recoil";
 import { toDoState } from "./atoms";
-import DragabbleCard from "./Components/DragabbleCard";
+import Board from "./Components/Board";
 
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
-  const onDragEnd = ({ draggableId, destination, source }: DropResult) => {
-    // destination이 없을 수도 있어 왜냐하면 같은 자리에 둘 수도 있으니까. 그때는 그냥 return
+
+  const onDragEnd = (info: DropResult) => {
+    const { destination, draggableId, source } = info;
+
     if (!destination) return;
 
-    setToDos((oldToDos) => {
-      const copyToDos = [...oldToDos];
-      // 1) Delete item on source.index
-      copyToDos.splice(source.index, 1);
-      // 2) Put back the item on the destination.index
-      copyToDos.splice(destination?.index, 0, draggableId);
+    // same board movement.
+    if (destination?.droppableId === source.droppableId) {
+      setToDos((allBoards) => {
+        const boardCopy = [...allBoards[source.droppableId]];
+        boardCopy.splice(source.index, 1);
+        boardCopy.splice(destination?.index, 0, draggableId);
 
-      return copyToDos;
-    });
+        // 수정된 board, 그리고 나머지 board까지 return
+        return {
+          ...allBoards,
+          [source.droppableId]: boardCopy,
+        };
+      });
+    }
+
+    // cross board movement.
+    if (destination?.droppableId !== source.droppableId) {
+      setToDos((allBoards) => {
+        const sourceBoard = [...allBoards[source.droppableId]];
+        const destinationBoard = [...allBoards[destination.droppableId]];
+        sourceBoard.splice(source.index, 1);
+        destinationBoard.splice(destination?.index, 0, draggableId);
+
+        return {
+          ...allBoards,
+          [source.droppableId]: sourceBoard,
+          [destination.droppableId]: destinationBoard,
+        };
+      });
+    }
   };
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Wrapper>
         <Boards>
-          <Droppable droppableId="one">
-            {(magic) => (
-              <Board ref={magic.innerRef} {...magic.droppableProps}>
-                {toDos.map((toDo, index) => (
-                  <DragabbleCard key={toDo} index={index} toDo={toDo} />
-                ))}
-                {magic.placeholder}
-              </Board>
-            )}
-          </Droppable>
+          {Object.keys(toDos).map((boardId) => (
+            <Board boardId={boardId} key={boardId} toDos={toDos[boardId]} />
+          ))}
         </Boards>
       </Wrapper>
     </DragDropContext>
@@ -48,7 +64,7 @@ const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
 
-  max-width: 480px;
+  max-width: 680px;
   width: 100%;
   height: 100vh;
 
@@ -58,15 +74,8 @@ const Wrapper = styled.div`
 const Boards = styled.div`
   display: grid;
   width: 100%;
-  grid-template-columns: repeat(1, 1fr);
-`;
-
-const Board = styled.div`
-  padding: 20px 10px;
-  padding-top: 30px;
-  background-color: ${(props) => props.theme.boardColor};
-  border-radius: 5px;
-  min-height: 200px;
+  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
 `;
 
 export default App;
