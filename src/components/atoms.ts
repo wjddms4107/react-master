@@ -12,6 +12,7 @@ export interface IToDo {
   category: Categories;
 }
 
+
 export const categoryState = atom<Categories>({
   key: "category",
   default: Categories.TO_DO,
