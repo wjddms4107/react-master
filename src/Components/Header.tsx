@@ -75,7 +75,7 @@ const Input = styled(motion.input)`
   transform-origin: right center;
   position: absolute;
   right: 0px;
-  padding: 5px 10px;
+  padding: 5px 15px;
   padding-left: 40px;
   z-index: -1;
   color: white;
@@ -115,19 +115,24 @@ function Header() {
   const navAnimation = useAnimation();
   const { scrollY } = useScroll();
 
+  // 특정 코드를 통해서 애니메이션을 실행시키고 싶을 때는 이렇게 함. (useAnimation)
+  // 이 방법은 component의 props를 이용해서는 복잡할 수 있는 "애니메이션을 동시에" 실행시키고 싶을때 유용하다.
+  // ex) 20개의 애니메이션들을 로그인했을 때 동시에 실행시키고 싶다면...
   const toggleSearch = () => {
     if (searchOpen) {
-      // close 애니메이션
+      // 검색창이 열려있으면 input을 닫는 애니메이션
       inputAnimation.start({
         scaleX: 0,
       });
     } else {
-      // open 애니메이션
+      // 검색창이 닫혀있으면 input을 여는 애니메이션
       inputAnimation.start({ scaleX: 1 });
     }
     setSearchOpen((prev) => !prev);
   };
 
+  // useScroll을 어떻게 쓰는지 보여주기위해 useEffect에 쓰지만
+  // 실제로는 Nav에 조건문 몇개 쓰고 끝내면 됨
   useEffect(() => {
     scrollY.onChange(() => {
       if (scrollY.get() > 80) {
@@ -167,7 +172,7 @@ function Header() {
         <Search>
           <motion.svg
             onClick={toggleSearch}
-            animate={{ x: searchOpen ? -225 : 0 }}
+            animate={{ x: searchOpen ? -190 : 0 }}
             transition={{ type: "linear" }}
             fill="currentColor"
             viewBox="0 0 20 20"
