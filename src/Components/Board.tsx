@@ -33,6 +33,7 @@ function Board({ toDos, boardId }: IBoardProps) {
     });
     setValue("toDo", "");
   };
+
   return (
     <Wrapper>
       <Title>{boardId}</Title>
@@ -88,8 +89,15 @@ const Title = styled.h2`
 const Form = styled.form`
   width: 100%;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   > input {
-    width: 100%;
+    width: 88%;
+    height: 35px;
+
+    padding-left: 5px;
   }
 `;
 
